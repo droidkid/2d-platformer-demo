@@ -42,7 +42,6 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 		}
 		if (walk_anim_timer < WALKING_ANIM_FRAME_2) {
 			playerState = WALKING_FRAME_2;
-			cout << walk_anim_timer << " " << playerState << endl;
 		}
 		walk_anim_timer -= MS_PER_UPDATE;
 

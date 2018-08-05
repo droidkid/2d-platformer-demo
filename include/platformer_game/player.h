@@ -19,7 +19,7 @@ const double JUMP_ACCEL = 0.001;
 
 enum PlayerState {
 	IDLE,
-	// Combine FRAME1
+	// Combine FRAME1 and FRAME 2
 	WALKING_FRAME_1,
 	WALKING_FRAME_2,
 	JUMPING
