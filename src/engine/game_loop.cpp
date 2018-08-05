@@ -8,7 +8,6 @@ using namespace GameEngineConstants;
 GameLoop::GameLoop(InputPoller *inputPoller, Canvas *canvas) :
 	inputPoller(inputPoller), canvas(canvas) {
 	lagMs = 0;
-	lastDrawFrame = 0;
 	currentTickMs = 0;
 }
 
@@ -29,10 +28,7 @@ void GameLoop::runLoop(Scene *scene) {
 			lagMs -= MS_PER_UPDATE;
 		}
 
-		if (currentTickMs - lastDrawFrame > MS_PER_FRAME_UPDATE) {
-			scene->draw(canvas);
-			lastDrawFrame = MS_PER_FRAME_UPDATE;
-		}
+		scene->draw(canvas);
 
 		quitEventReceived = input->quitEvent;
 	}

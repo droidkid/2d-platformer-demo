@@ -7,7 +7,6 @@
 class GameLoop {
     int currentTickMs;
     int lagMs;
-	int lastDrawFrame;
     InputPoller *inputPoller;
     Canvas *canvas;
 

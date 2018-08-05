@@ -20,7 +20,7 @@ void Level1::draw(Canvas *canvas) {
 	canvas->clearScreen();
 
 	canvas->drawTexture(background1, { 0, 0, 600, 480 });
-	//canvas->drawTexture(background2, { 0, 0, 600, 480 });
+	canvas->drawTexture(background2, { 0, 0, 600, 480 });
 	canvas->drawTexture(background3, { 0, 0, 600, 480 });
 
 	for (int i = 0; i < 600; i = i + 64) {
