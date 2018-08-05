@@ -11,22 +11,18 @@
 using namespace GameEngineConstants;
 using namespace GameConstants;
 
-const int TOTAL_WALKING_ANIMATION_CYCLE_MS = 200;
-const int WALKING_ANIM_FRAME_1 = 200;
-const int WALKING_ANIM_FRAME_2 = 100;
+const int TOTAL_WALKING_ANIMATION_CYCLE_MS = 300;
+const int WALKING_ANIM_FRAME_1 = 300;
+const int WALKING_ANIM_FRAME_2 = 150;
 const double JUMP_VEL = -0.35;
 const double JUMP_ACCEL = 0.001;
 
 enum PlayerState {
-	IDLE_LOOK_RIGHT,
-	IDLE_LOOK_LEFT,
+	IDLE,
 	// Combine FRAME1
-	WALKING_RIGHT_FRAME_1,
-	WALKING_RIGHT_FRAME_2,
-	WALKING_LEFT_FRAME_1,
-	WALKING_LEFT_FRAME_2,
-	JUMP_LEFT_FRAME,
-	JUMP_RIGHT_FRAME
+	WALKING_FRAME_1,
+	WALKING_FRAME_2,
+	JUMPING
 };
 
 class PlayerPhysicsComponent : public PhysicsComponent {
@@ -45,6 +41,8 @@ public:
 	double walking_speed;
 	int walk_anim_timer;
 	int jump_anim_timer;
+	int is_looking_right;
+	int prev_x_position;
 	PlayerState playerState;
 
 	PlayerLogicComponent();

@@ -1,111 +1,77 @@
 #include "platformer_game/player.h"
 
+#include <iostream>
+using namespace std;
 
 PlayerLogicComponent::PlayerLogicComponent() {
-	playerState = IDLE_LOOK_RIGHT;
+	playerState = IDLE;
 	walking_speed = 3.0;
+	is_looking_right = 1;
+	prev_x_position = 0;
 }
 
 void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 	PlayerState oldPlayerState = playerState;
 	switch (oldPlayerState) {
-	case IDLE_LOOK_RIGHT:
-	case IDLE_LOOK_LEFT:
+	case IDLE:
 		if (input->leftKeyDown) {
-			playerState = WALKING_LEFT_FRAME_1;
+			playerState = WALKING_FRAME_1;
 			physics->x -= walking_speed;
 			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
 		}
 		else if (input->rightKeyDown) {
-			playerState = WALKING_RIGHT_FRAME_1;
+			playerState = WALKING_FRAME_1;
 			physics->x += walking_speed;
 			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
 		}
 
 		// Do Jump calc after movement calc
 		if (input->spacePressed) {
-			if (oldPlayerState == IDLE_LOOK_LEFT) {
-				playerState = JUMP_LEFT_FRAME;
-				physics->velocity.y = JUMP_VEL;
-				physics->accel.y = JUMP_ACCEL;
-			}
-			if (oldPlayerState == IDLE_LOOK_RIGHT) {
-				playerState = JUMP_RIGHT_FRAME;
-				physics->velocity.y = JUMP_VEL;
-				physics->accel.y = JUMP_ACCEL;
-			}
-		}
-		break;
-	case WALKING_RIGHT_FRAME_1:
-	case WALKING_RIGHT_FRAME_2:
-		if (input->rightKeyDown) {
-			if (walk_anim_timer < 0) {
-				walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
-			}
-			if (walk_anim_timer < WALKING_ANIM_FRAME_1) {
-				playerState = WALKING_RIGHT_FRAME_1;
-			}
-			if (walk_anim_timer < WALKING_ANIM_FRAME_2) {
-				playerState = WALKING_RIGHT_FRAME_2;
-			}
-			walk_anim_timer -= MS_PER_UPDATE;
-			physics->x += walking_speed;
-		}
-		else if (input->leftKeyDown) {
-			playerState = WALKING_LEFT_FRAME_1;
-			physics->x -= walking_speed;
-			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
-		}
-		else {
-			playerState = IDLE_LOOK_RIGHT;
-		}
-
-		if (input->spacePressed) {
-			playerState = JUMP_RIGHT_FRAME;
+			playerState = JUMPING;
 			physics->velocity.y = JUMP_VEL;
 			physics->accel.y = JUMP_ACCEL;
 		}
 		break;
-	case WALKING_LEFT_FRAME_1:
-	case WALKING_LEFT_FRAME_2:
-		if (input->rightKeyDown) {
-			playerState = WALKING_RIGHT_FRAME_1;
-			physics->x += walking_speed;
+	case WALKING_FRAME_1:
+	case WALKING_FRAME_2:
+		if (walk_anim_timer < 0) {
 			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
 		}
-		else if (input->leftKeyDown) {
-			if (walk_anim_timer < 0) {
-				walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
-			}
-			if (walk_anim_timer < WALKING_ANIM_FRAME_1) {
-				playerState = WALKING_LEFT_FRAME_1;
-			}
-			if (walk_anim_timer < WALKING_ANIM_FRAME_2) {
-				playerState = WALKING_LEFT_FRAME_2;
-			}
-			walk_anim_timer -= MS_PER_UPDATE;
-			physics->x -= walking_speed;
+		if (walk_anim_timer < WALKING_ANIM_FRAME_1) {
+			playerState = WALKING_FRAME_1;
 		}
-		else {
-			playerState = IDLE_LOOK_LEFT;
+		if (walk_anim_timer < WALKING_ANIM_FRAME_2) {
+			playerState = WALKING_FRAME_2;
+			cout << walk_anim_timer << " " << playerState << endl;
 		}
+		walk_anim_timer -= MS_PER_UPDATE;
 
-		if (input->spacePressed) {
-			playerState = JUMP_LEFT_FRAME;
-			physics->velocity.y = JUMP_VEL;
-			physics->accel.y = JUMP_ACCEL;
+		if (input->rightKeyDown) {
+			physics->x += walking_speed;
 		}
-		break;
-	case JUMP_LEFT_FRAME:
 		if (input->leftKeyDown) {
-			playerState = JUMP_LEFT_FRAME;
 			physics->x -= walking_speed;
-			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
+		}
+
+		if (input->spacePressed) {
+			playerState = JUMPING;
+			physics->velocity.y = JUMP_VEL;
+			physics->accel.y = JUMP_ACCEL;
+		}
+
+		if (!input->leftKeyDown &&
+			!input->rightKeyDown &&
+			!input->spacePressed
+			) {
+			playerState = IDLE;
+		}
+		break;
+	case JUMPING:
+		if (input->leftKeyDown) {
+			physics->x -= walking_speed;
 		}
 		else if (input->rightKeyDown) {
-			playerState = JUMP_RIGHT_FRAME;
 			physics->x += walking_speed;
-			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
 		}
 
 		if (!input->spacePressed) {
@@ -113,109 +79,106 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 				physics->velocity.y -= physics->velocity.y;
 			}
 		}
+
 		if (physics->y > 255) {
-			playerState = IDLE_LOOK_LEFT;
+			playerState = IDLE;
 			physics->y = 255;
 			physics->accel.y = 0;
 			physics->velocity.y = 0;
 		}
-		break;
-	case JUMP_RIGHT_FRAME:
-		if (input->leftKeyDown) {
-			playerState = JUMP_LEFT_FRAME;
-			physics->x -= walking_speed;
-			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
-		}
-		else if (input->rightKeyDown) {
-			playerState = JUMP_RIGHT_FRAME;
-			physics->x += walking_speed;
-			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
-		}
-
-		if (!input->spacePressed) {
-			if (physics->velocity.y < 0) {
-				physics->velocity.y -= physics->velocity.y;
-			}
-		}
-		if (physics->y > 255) {
-			playerState = IDLE_LOOK_RIGHT;
-			physics->y = 255;
-			physics->accel.y = 0;
-			physics->velocity.y = 0;
-		}
-
 		break;
 	default:
 		break;
 	}
 
+	if (physics->x > prev_x_position) {
+		is_looking_right = 1;
+	}
+	else if (physics->x < prev_x_position) {
+		is_looking_right = 0;
+	}
+
 	if (physics->x < 0) {
 		physics->x = 600 - physics->w;
+		is_looking_right = 0;
 	}
 	if (physics->x > 600) {
 		physics->x = 0;
+		is_looking_right = 1;
 	}
+	prev_x_position = physics->x;
 
-	physics->y += physics->velocity.y * MS_PER_UPDATE + 0.5 * physics->accel.y * MS_PER_UPDATE * MS_PER_UPDATE;
+	physics->y += physics->velocity.y * MS_PER_UPDATE +
+		0.5 * physics->accel.y * MS_PER_UPDATE * MS_PER_UPDATE;
 	physics->y += physics->accel.y * MS_PER_UPDATE;
+
 }
 
 
 void PlayerGraphicsComponent::draw(Canvas *canvas) {
-	SDL_Rect boundingBox = { 
-		physics->x , 
-		physics->y, 
-		physics->w, 
-		physics->h 
+	SDL_Rect boundingBox = {
+		physics->x ,
+		physics->y,
+		physics->w,
+		physics->h
 	};
 	switch (logic->playerState) {
-	case WALKING_LEFT_FRAME_1:
-		canvas->drawTextureHFlip(
-			walkTexture1,
-			boundingBox
-		);
+	case WALKING_FRAME_1:
+		if (logic->is_looking_right) {
+			canvas->drawTexture(
+				walkTexture1,
+				boundingBox
+			);
+		}
+		else {
+			canvas->drawTextureHFlip(
+				walkTexture1,
+				boundingBox
+			);
+		}
 		break;
-	case WALKING_RIGHT_FRAME_1:
-		canvas->drawTexture(
-			walkTexture1,
-			boundingBox
-		);
+	case WALKING_FRAME_2:
+		if (logic->is_looking_right) {
+			canvas->drawTexture(
+				walkTexture2,
+				boundingBox
+			);
+		}
+		else {
+			canvas->drawTextureHFlip(
+				walkTexture2,
+				boundingBox
+			);
+		}
 		break;
-	case WALKING_LEFT_FRAME_2:
-		canvas->drawTextureHFlip(
-			walkTexture2,
-			boundingBox
-		);
+
+	case IDLE:
+		if (logic->is_looking_right) {
+			canvas->drawTexture(
+				idleTexture,
+				boundingBox
+			);
+		}
+		else {
+			canvas->drawTextureHFlip(
+				idleTexture,
+				boundingBox
+			);
+		}
 		break;
-	case WALKING_RIGHT_FRAME_2:
-		canvas->drawTexture(
-			walkTexture2,
-			boundingBox
-		);
-		break;
-	case IDLE_LOOK_LEFT:
-		canvas->drawTextureHFlip(
-			idleTexture,
-			boundingBox
-		);
-		break;
-	case IDLE_LOOK_RIGHT:
-		canvas->drawTexture(
-			idleTexture,
-			boundingBox
-		);
-		break;
-	case JUMP_RIGHT_FRAME:
-		canvas->drawTexture(
-			jumpTexture,
-			boundingBox
-		);
-		break;
-	case JUMP_LEFT_FRAME:
-		canvas->drawTextureHFlip(
-			jumpTexture,
-			boundingBox
-		);
+	case JUMPING:
+		if (logic->is_looking_right) {
+			canvas->drawTexture(
+				jumpTexture,
+				boundingBox
+			);
+		}
+		else {
+			canvas->drawTextureHFlip(
+				jumpTexture,
+				boundingBox
+			);
+		}
 		break;
 	default:
 		break;
