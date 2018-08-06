@@ -15,12 +15,12 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 	switch (oldPlayerState) {
 	case IDLE:
 		if (input->leftKeyDown) {
-			playerState = WALKING_FRAME_1;
+			playerState = WALKING;
 			physics->x -= walking_speed;
 			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
 		}
 		else if (input->rightKeyDown) {
-			playerState = WALKING_FRAME_1;
+			playerState = WALKING;
 			physics->x += walking_speed;
 			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
 		}
@@ -32,16 +32,9 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 			physics->accel.y = JUMP_ACCEL;
 		}
 		break;
-	case WALKING_FRAME_1:
-	case WALKING_FRAME_2:
+	case WALKING:
 		if (walk_anim_timer < 0) {
 			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
-		}
-		if (walk_anim_timer < WALKING_ANIM_FRAME_1) {
-			playerState = WALKING_FRAME_1;
-		}
-		if (walk_anim_timer < WALKING_ANIM_FRAME_2) {
-			playerState = WALKING_FRAME_2;
 		}
 		walk_anim_timer -= MS_PER_UPDATE;
 
@@ -122,35 +115,27 @@ void PlayerGraphicsComponent::draw(Canvas *canvas) {
 		physics->h
 	};
 	switch (logic->playerState) {
-	case WALKING_FRAME_1:
+	case WALKING:
+		SDL_Texture **walkTexture = &walkTexture1;
+		if (logic->walk_anim_timer <= WALKING_ANIM_FRAME_1) {
+			walkTexture = &walkTexture1;
+		}
+		if (logic->walk_anim_timer <= WALKING_ANIM_FRAME_2) {
+			walkTexture = &walkTexture2;
+		}
 		if (logic->is_looking_right) {
 			canvas->drawTexture(
-				walkTexture1,
+				*walkTexture,
 				boundingBox
 			);
 		}
 		else {
 			canvas->drawTextureHFlip(
-				walkTexture1,
+				*walkTexture,
 				boundingBox
 			);
 		}
 		break;
-	case WALKING_FRAME_2:
-		if (logic->is_looking_right) {
-			canvas->drawTexture(
-				walkTexture2,
-				boundingBox
-			);
-		}
-		else {
-			canvas->drawTextureHFlip(
-				walkTexture2,
-				boundingBox
-			);
-		}
-		break;
-
 	case IDLE:
 		if (logic->is_looking_right) {
 			canvas->drawTexture(
