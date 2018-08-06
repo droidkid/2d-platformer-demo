@@ -5,7 +5,7 @@ using namespace std;
 
 PlayerLogicComponent::PlayerLogicComponent() {
 	playerState = IDLE;
-	walking_speed = 3.0;
+	walking_speed = 1.5;
 	is_looking_right = 1;
 	prev_x_position = 0;
 }
@@ -114,9 +114,11 @@ void PlayerGraphicsComponent::draw(Canvas *canvas) {
 		physics->w,
 		physics->h
 	};
+
+	SDL_Texture **walkTexture = &walkTexture1;
+
 	switch (logic->playerState) {
 	case WALKING:
-		SDL_Texture **walkTexture = &walkTexture1;
 		if (logic->walk_anim_timer <= WALKING_ANIM_FRAME_1) {
 			walkTexture = &walkTexture1;
 		}
