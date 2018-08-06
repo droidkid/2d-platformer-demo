@@ -14,8 +14,12 @@ using namespace GameConstants;
 const int TOTAL_WALKING_ANIMATION_CYCLE_MS = 300;
 const int WALKING_ANIM_FRAME_1 = 300;
 const int WALKING_ANIM_FRAME_2 = 150;
+const int PLAYER_SPRITE_WIDTH = 40;
+const int PLAYER_SPRITE_HEIGHT = 55;
 const double JUMP_VEL = -0.35;
 const double JUMP_ACCEL = 0.001;
+const double NORMAL_WALKING_SPEED = 2.5;
+const double FAST_WALKING_SPEED = 3.5;
 
 enum PlayerState {
 	IDLE,
@@ -27,11 +31,10 @@ class PlayerPhysicsComponent : public PhysicsComponent {
 public:
 	PlayerPhysicsComponent() {
 		x = 150;
-		y = 255;
-		w = 40;
-		h = 55;
+		y = GROUND_LEVEL;
+		w = PLAYER_SPRITE_WIDTH;
+		h = PLAYER_SPRITE_HEIGHT;
 	}
-	void test();
 };
 
 class PlayerLogicComponent : public LogicComponent {

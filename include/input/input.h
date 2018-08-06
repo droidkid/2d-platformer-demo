@@ -9,4 +9,5 @@ public:
     int rightKeyDown;
     int enterPressed;
 	int spacePressed;
+	int shiftPressed;
 };

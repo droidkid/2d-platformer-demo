@@ -5,15 +5,24 @@ using namespace std;
 
 PlayerLogicComponent::PlayerLogicComponent() {
 	playerState = IDLE;
-	walking_speed = 1.5;
+	walking_speed = NORMAL_WALKING_SPEED;
 	is_looking_right = 1;
 	prev_x_position = 0;
 }
 
 void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 	PlayerState oldPlayerState = playerState;
+
+
 	switch (oldPlayerState) {
 	case IDLE:
+		if (input->shiftPressed) {
+			walking_speed = FAST_WALKING_SPEED;
+		}
+		else {
+			walking_speed = NORMAL_WALKING_SPEED;
+		}
+
 		if (input->leftKeyDown) {
 			playerState = WALKING;
 			physics->x -= walking_speed;
@@ -33,6 +42,13 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 		}
 		break;
 	case WALKING:
+		if (input->shiftPressed) {
+			walking_speed = FAST_WALKING_SPEED;
+		}
+		else {
+			walking_speed = NORMAL_WALKING_SPEED;
+		}
+
 		if (walk_anim_timer < 0) {
 			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
 		}
@@ -72,9 +88,9 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 			}
 		}
 
-		if (physics->y > 255) {
+		if (physics->y > GROUND_LEVEL) {
 			playerState = IDLE;
-			physics->y = 255;
+			physics->y = GROUND_LEVEL;
 			physics->accel.y = 0;
 			physics->velocity.y = 0;
 		}
@@ -91,10 +107,10 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 	}
 
 	if (physics->x < 0) {
-		physics->x = 600 - physics->w;
+		physics->x = SCREEN_WIDTH - physics->w;
 		is_looking_right = 0;
 	}
-	if (physics->x > 600) {
+	if (physics->x > SCREEN_WIDTH) {
 		physics->x = 0;
 		is_looking_right = 1;
 	}
