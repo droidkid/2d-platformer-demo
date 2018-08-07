@@ -88,9 +88,9 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 			}
 		}
 
-		if (physics->y > GROUND_LEVEL) {
+		if (physics->y + physics->h > GROUND_LEVEL) {
 			playerState = IDLE;
-			physics->y = GROUND_LEVEL;
+			physics->y = GROUND_LEVEL - physics->h;
 			physics->accel.y = 0;
 			physics->velocity.y = 0;
 		}

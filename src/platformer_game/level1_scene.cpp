@@ -1,6 +1,5 @@
 #include "platformer_game/level1_scene.h"
 #include "engine/game_engine_constants.h"
-#include "platformer_game/player.h"
 
 using namespace GameEngineConstants;
 
@@ -13,6 +12,7 @@ void Level1::init() {
 	assetLoader->loadPNGintoTexture("assets/PNG/Other/fluidBrown.png", &block);
 
 	player = new PlayerGameObject(assetLoader);
+	enemy = new EnemyGameObject(assetLoader);
 }
 
 void Level1::draw(Canvas *canvas) {
@@ -34,6 +34,7 @@ void Level1::draw(Canvas *canvas) {
 	}
 
 	player->draw(canvas);
+	enemy->draw(canvas);
 
 	canvas->renderScreen();
 }
@@ -41,5 +42,6 @@ void Level1::draw(Canvas *canvas) {
 void Level1::update(Input *input) {
 
 	player->update(input);
+	enemy->update(input);
 
 }

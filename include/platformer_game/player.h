@@ -31,7 +31,7 @@ class PlayerPhysicsComponent : public PhysicsComponent {
 public:
 	PlayerPhysicsComponent() {
 		x = 150;
-		y = GROUND_LEVEL;
+		y = GROUND_LEVEL-PLAYER_SPRITE_HEIGHT;
 		w = PLAYER_SPRITE_WIDTH;
 		h = PLAYER_SPRITE_HEIGHT;
 	}

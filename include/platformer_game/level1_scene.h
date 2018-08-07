@@ -3,6 +3,7 @@
 #include "scene/scene.h"
 #include "sdl/asset_loader.h"
 #include "platformer_game/player.h"
+#include "platformer_game/enemy.h"
 
 class Level1 : public Scene {
 	AssetLoader *assetLoader;
@@ -19,6 +20,7 @@ class Level1 : public Scene {
 	SDL_Texture *block;
 
 	PlayerGameObject *player;
+	EnemyGameObject *enemy;
 
 	int timer = 300;
 	int walk_state = 1;
