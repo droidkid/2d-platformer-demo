@@ -4,6 +4,7 @@
 #include "sdl/asset_loader.h"
 #include "platformer_game/player.h"
 #include "platformer_game/enemy.h"
+#include "engine/collision_manager.h"
 
 class Level1 : public Scene {
 	AssetLoader *assetLoader;
@@ -11,22 +12,20 @@ class Level1 : public Scene {
 	SDL_Texture *background2;
 	SDL_Texture *background3;
 
-	SDL_Texture *walk1;
-	SDL_Texture *walk2;
-	SDL_Texture *walk3;
-	SDL_Texture *walk4;
-	SDL_Texture *walk5;
-
 	SDL_Texture *block;
 
 	PlayerGameObject *player;
 	EnemyGameObject *enemy;
 
+	CollisionManager *collisionManager;
+
 	int timer = 300;
 	int walk_state = 1;
 	double x = 0;
 public:
-	Level1(AssetLoader *assetLoader) : assetLoader(assetLoader) {};
+	Level1(AssetLoader *assetLoader) : assetLoader(assetLoader) {
+		collisionManager = new CollisionManager();
+	};
 	void init();
 	void draw(Canvas *canvas);
 	void update(Input *input);

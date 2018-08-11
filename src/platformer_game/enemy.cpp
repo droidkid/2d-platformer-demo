@@ -23,7 +23,6 @@ void EnemyLogicComponent::update(PhysicsComponent *physics, Input *input) {
 	}
 
 	physics->x += walking_speed;
-	cout << physics->x << endl;
 }
 
 void EnemyGraphicsComponent::draw(Canvas *canvas) {

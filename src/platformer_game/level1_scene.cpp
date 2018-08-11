@@ -13,6 +13,9 @@ void Level1::init() {
 
 	player = new PlayerGameObject(assetLoader);
 	enemy = new EnemyGameObject(assetLoader);
+
+	collisionManager->addGameObject(player);
+	collisionManager->addGameObject(enemy);
 }
 
 void Level1::draw(Canvas *canvas) {
@@ -43,5 +46,7 @@ void Level1::update(Input *input) {
 
 	player->update(input);
 	enemy->update(input);
+
+	collisionManager->handleCollisions();
 
 }

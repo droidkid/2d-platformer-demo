@@ -42,6 +42,8 @@ public:
 		graphics->draw(canvas);
 	}
 
+	virtual void onCollision(GameObject *otherGameObject) {}
+
 	PhysicsComponent* getPhysics() {
 		return physics;
 	}
