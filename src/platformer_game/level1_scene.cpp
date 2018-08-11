@@ -9,7 +9,7 @@ void Level1::init() {
 	assetLoader->loadPNGintoTexture("assets/PNG/Backgrounds/set1_tiles.png", &background2);
 	assetLoader->loadPNGintoTexture("assets/PNG/Backgrounds/set1_hills.png", &background3);
 
-	assetLoader->loadPNGintoTexture("assets/PNG/Other/fluidBrown.png", &block);
+	assetLoader->loadPNGintoTexture("assets/PNG/Other/fluidGreen.png", &block);
 
 	player = new PlayerGameObject(assetLoader);
 	enemy = new EnemyGameObject(assetLoader);

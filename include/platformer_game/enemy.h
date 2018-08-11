@@ -8,6 +8,8 @@
 #include "game_constants.h"
 #include "sdl/asset_loader.h"
 
+#include "platformer_game/player.h"
+
 using namespace GameEngineConstants;
 using namespace GameConstants;
 
@@ -16,6 +18,11 @@ const int ENEMY_WALK_ANIM_CYCLE_TIME_MS = 300;
 const int ENEMY_WALK_ANIM_FRAME_1_MS = 300;
 const int ENEMY_WALK_ANIM_FRAME_2_MS = 150;
 const int ENEMY_TURN_TIME_MS = 1000;
+
+enum EnemyState {
+	ENEMY_WALKING,
+	ENEMY_DEAD
+};
 
 class EnemyPhysicsComponent : public PhysicsComponent {
 public:
@@ -32,6 +39,7 @@ public:
 	double walking_speed;
 	int walk_anim_timer;
 	int turn_timer;
+	EnemyState enemyState;
 
 	EnemyLogicComponent();
 	void update(PhysicsComponent *physics, Input *input);
@@ -44,6 +52,7 @@ class EnemyGraphicsComponent : public GraphicsComponent {
 
 	SDL_Texture *walkTexture1;
 	SDL_Texture *walkTexture2;
+	SDL_Texture *deadTexture;
 public:
 	EnemyGraphicsComponent(
 		EnemyLogicComponent *logic,
@@ -52,6 +61,7 @@ public:
 	) : logic(logic), physics(physics) {
 		assetLoader->loadPNGintoTexture("assets/enemyWalking_1.png", &walkTexture1);
 		assetLoader->loadPNGintoTexture("assets/enemyWalking_2.png", &walkTexture2);
+		assetLoader->loadPNGintoTexture("assets/enemyWalking_4.png", &deadTexture);
 	}
 
 	void draw(Canvas *canvas);
@@ -59,6 +69,7 @@ public:
 
 class EnemyGameObject : public GameObject {
 public:
+	EnemyLogicComponent *enemyLogicComponent;
 	EnemyGameObject(AssetLoader *assetLoader) {
 		EnemyPhysicsComponent *physics = new EnemyPhysicsComponent();
 		EnemyLogicComponent *logic = new EnemyLogicComponent();
@@ -67,5 +78,21 @@ public:
 		this->physics = physics;
 		this->graphics = graphics;
 		this->logic = logic;
+		this->objectType = ENEMY_OBJECT_TYPE;
+
+		this->enemyLogicComponent = logic;
+	}
+
+	void onCollision(GameObject *otherGameObject) {
+		if (otherGameObject->getObjectType() == PLAYER_OBJECT_TYPE) {
+			handlePlayerCollision((PlayerGameObject *)otherGameObject);
+		}
+	}
+
+private:
+	void handlePlayerCollision(PlayerGameObject *playerGameObject) {
+		if (playerGameObject->getPhysics()->velocity.y > 0) {
+			enemyLogicComponent->enemyState = ENEMY_DEAD;
+		}
 	}
 };

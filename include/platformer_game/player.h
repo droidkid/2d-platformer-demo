@@ -16,8 +16,8 @@ const int WALKING_ANIM_FRAME_1 = 300;
 const int WALKING_ANIM_FRAME_2 = 150;
 const int PLAYER_SPRITE_WIDTH = 40;
 const int PLAYER_SPRITE_HEIGHT = 55;
-const double JUMP_VEL = -0.35;
-const double JUMP_ACCEL = 0.001;
+const double JUMP_VEL = -0.25;
+const double JUMP_ACCEL = 0.0006;
 const double NORMAL_WALKING_SPEED = 2.5;
 const double FAST_WALKING_SPEED = 3.5;
 
@@ -31,7 +31,7 @@ class PlayerPhysicsComponent : public PhysicsComponent {
 public:
 	PlayerPhysicsComponent() {
 		x = 150;
-		y = GROUND_LEVEL-PLAYER_SPRITE_HEIGHT;
+		y = GROUND_LEVEL - PLAYER_SPRITE_HEIGHT;
 		w = PLAYER_SPRITE_WIDTH;
 		h = PLAYER_SPRITE_HEIGHT;
 	}
@@ -44,6 +44,7 @@ public:
 	int jump_anim_timer;
 	int is_looking_right;
 	int prev_x_position;
+	int space_released_after_jump;
 	PlayerState playerState;
 
 	PlayerLogicComponent();
@@ -63,7 +64,7 @@ public:
 	PlayerGraphicsComponent(
 		PlayerLogicComponent *logic,
 		PlayerPhysicsComponent *physics,
-		AssetLoader *assetLoader) : 
+		AssetLoader *assetLoader) :
 		logic(logic), physics(physics) {
 		assetLoader->loadPNGintoTexture("assets/player_idle.png", &idleTexture);
 		assetLoader->loadPNGintoTexture("assets/player_walk1.png", &walkTexture1);
@@ -85,6 +86,19 @@ public:
 		this->physics = physics;
 		this->graphics = graphics;
 		this->logic = logic;
+		this->objectType = PLAYER_OBJECT_TYPE;
 	};
+
+	void onCollision(GameObject *otherGameObject) {
+		switch (otherGameObject->getObjectType()) {
+		case ENEMY_OBJECT_TYPE:
+			handleEnemyCollision(otherGameObject);
+			break;
+		default:
+			break;
+		}
+	}
+private:
+	void handleEnemyCollision(GameObject *enemyObject);
 };
 

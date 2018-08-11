@@ -36,10 +36,18 @@ void Canvas::drawTextureHFlip(SDL_Texture *texture, SDL_Rect *boundingBox) {
 	SDL_RenderCopyEx(renderer, texture, NULL, boundingBox, 0, NULL, SDL_FLIP_HORIZONTAL);
 }
 
+void Canvas::drawTextureVFlip(SDL_Texture *texture, SDL_Rect *boundingBox) {
+	SDL_RenderCopyEx(renderer, texture, NULL, boundingBox, 0, NULL, SDL_FLIP_VERTICAL);
+}
+
 void Canvas::drawTexture(SDL_Texture *texture, SDL_Rect boundingBox) {
 	drawTexture(texture, &boundingBox);
 }
 
 void Canvas::drawTextureHFlip(SDL_Texture *texture, SDL_Rect boundingBox) {
 	drawTextureHFlip(texture, &boundingBox);
+}
+
+void Canvas::drawTextureVFlip(SDL_Texture *texture, SDL_Rect boundingBox) {
+	drawTextureVFlip(texture, &boundingBox);
 }

@@ -1,4 +1,5 @@
 #include "platformer_game/player.h"
+#include "platformer_game/enemy.h"
 
 #include <iostream>
 using namespace std;
@@ -37,6 +38,7 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 		// Do Jump calc after movement calc
 		if (input->spacePressed) {
 			playerState = JUMPING;
+			space_released_after_jump = 0;
 			physics->velocity.y = JUMP_VEL;
 			physics->accel.y = JUMP_ACCEL;
 		}
@@ -63,6 +65,7 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 
 		if (input->spacePressed) {
 			playerState = JUMPING;
+			space_released_after_jump = 0;
 			physics->velocity.y = JUMP_VEL;
 			physics->accel.y = JUMP_ACCEL;
 		}
@@ -82,10 +85,13 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 			physics->x += walking_speed;
 		}
 
-		if (!input->spacePressed) {
+		// If Player releases space early, makes the player make a
+		// smaller jump.
+		if (!input->spacePressed && !space_released_after_jump) {
 			if (physics->velocity.y < 0) {
 				physics->velocity.y -= physics->velocity.y;
 			}
+			space_released_after_jump = 1;
 		}
 
 		if (physics->y + physics->h > GROUND_LEVEL) {
@@ -186,3 +192,15 @@ void PlayerGraphicsComponent::draw(Canvas *canvas) {
 		break;
 	}
 }
+
+void PlayerGameObject::handleEnemyCollision(GameObject *enemyObject) {
+	EnemyGameObject *enemy = (EnemyGameObject *)enemyObject;
+
+	if (physics->velocity.y > 0 &&
+		enemy->enemyLogicComponent->enemyState == WALKING) {
+
+		physics->velocity.y = -0.2;
+
+	}
+}
+
