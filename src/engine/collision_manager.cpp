@@ -1,4 +1,5 @@
 #include "engine/collision_manager.h"
+#include "math/geometry.h"
 
 void CollisionManager::addGameObject(GameObject *gameObject) {
 	gameObjects.push_back(gameObject);
@@ -29,5 +30,8 @@ void CollisionManager::handleCollisions() {
 }
 
 bool CollisionManager::isColliding(GameObject *object1, GameObject *object2) {
-	// TODO(implement);
+	Rect r1 = object1->getPhysics()->getRect();
+	Rect r2 = object2->getPhysics()->getRect();
+
+	return isRectIntersect(r1, r2);
 }
