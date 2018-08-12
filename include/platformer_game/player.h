@@ -16,10 +16,12 @@ const int WALKING_ANIM_FRAME_1 = 300;
 const int WALKING_ANIM_FRAME_2 = 150;
 const int PLAYER_SPRITE_WIDTH = 40;
 const int PLAYER_SPRITE_HEIGHT = 55;
-const double JUMP_VEL = -0.25;
-const double JUMP_ACCEL = 0.0006;
-const double NORMAL_WALKING_SPEED = 2.5;
-const double FAST_WALKING_SPEED = 3.5;
+const double JUMP_VEL = -0.45;
+const double JUMP_ACCEL = 0.001;
+const double WALKING_ACCEL = 0.0004;
+const double WALKING_DECEL = -0.004;
+const double NORMAL_WALKING_SPEED = 0.20;
+const double FAST_WALKING_SPEED = 0.40;
 
 enum PlayerState {
 	IDLE,
@@ -39,7 +41,8 @@ public:
 
 class PlayerLogicComponent : public LogicComponent {
 public:
-	double walking_speed;
+	double max_walking_speed;
+	double max_jumping_speed;
 	int walk_anim_timer;
 	int jump_anim_timer;
 	int is_looking_right;
@@ -49,6 +52,8 @@ public:
 
 	PlayerLogicComponent();
 	void update(PhysicsComponent *physics, Input *input);
+private:
+	void updateHeroPos(PhysicsComponent *physics);
 };
 
 class PlayerGraphicsComponent : public GraphicsComponent {

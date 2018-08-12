@@ -6,7 +6,8 @@ using namespace std;
 
 PlayerLogicComponent::PlayerLogicComponent() {
 	playerState = IDLE;
-	walking_speed = NORMAL_WALKING_SPEED;
+	max_walking_speed = NORMAL_WALKING_SPEED;
+	max_jumping_speed = -JUMP_VEL;
 	is_looking_right = 1;
 	prev_x_position = 0;
 }
@@ -14,29 +15,32 @@ PlayerLogicComponent::PlayerLogicComponent() {
 void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 	PlayerState oldPlayerState = playerState;
 
+	if (!input->spacePressed && !space_released_after_jump) {
+		space_released_after_jump = 1;
+	}
+
+	if (input->leftKeyDown && input->rightKeyDown) {
+		input->leftKeyDown = 0;
+		input->rightKeyDown = 0;
+	}
 
 	switch (oldPlayerState) {
 	case IDLE:
-		if (input->shiftPressed) {
-			walking_speed = FAST_WALKING_SPEED;
-		}
-		else {
-			walking_speed = NORMAL_WALKING_SPEED;
-		}
-
 		if (input->leftKeyDown) {
 			playerState = WALKING;
-			physics->x -= walking_speed;
 			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
 		}
 		else if (input->rightKeyDown) {
 			playerState = WALKING;
-			physics->x += walking_speed;
 			walk_anim_timer = TOTAL_WALKING_ANIMATION_CYCLE_MS;
 		}
 
 		// Do Jump calc after movement calc
-		if (input->spacePressed) {
+
+		physics->velocity.x = 0;
+		physics->accel.x = 0;
+
+		if (input->spacePressed && space_released_after_jump) {
 			playerState = JUMPING;
 			space_released_after_jump = 0;
 			physics->velocity.y = JUMP_VEL;
@@ -44,11 +48,12 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 		}
 		break;
 	case WALKING:
+
 		if (input->shiftPressed) {
-			walking_speed = FAST_WALKING_SPEED;
+			max_walking_speed = FAST_WALKING_SPEED;
 		}
 		else {
-			walking_speed = NORMAL_WALKING_SPEED;
+			max_walking_speed = NORMAL_WALKING_SPEED;
 		}
 
 		if (walk_anim_timer < 0) {
@@ -57,13 +62,13 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 		walk_anim_timer -= MS_PER_UPDATE;
 
 		if (input->rightKeyDown) {
-			physics->x += walking_speed;
+			physics->accel.x = WALKING_ACCEL;
 		}
-		if (input->leftKeyDown) {
-			physics->x -= walking_speed;
+		else if (input->leftKeyDown) {
+			physics->accel.x = -WALKING_ACCEL;
 		}
 
-		if (input->spacePressed) {
+		if (input->spacePressed && space_released_after_jump) {
 			playerState = JUMPING;
 			space_released_after_jump = 0;
 			physics->velocity.y = JUMP_VEL;
@@ -76,39 +81,48 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 			) {
 			playerState = IDLE;
 		}
+		updateHeroPos(physics);
 		break;
 	case JUMPING:
-		if (input->leftKeyDown) {
-			physics->x -= walking_speed;
+		if (input->rightKeyDown) {
+			physics->accel.x = WALKING_ACCEL;
 		}
-		else if (input->rightKeyDown) {
-			physics->x += walking_speed;
+		else if (input->leftKeyDown) {
+			physics->accel.x = -WALKING_ACCEL;
+		}
+		else {
+			physics->accel.x = 0;
+		}
+
+		if (space_released_after_jump) {
+			physics->accel.y = 0.0035;
 		}
 
 		// If Player releases space early, makes the player make a
 		// smaller jump.
-		if (!input->spacePressed && !space_released_after_jump) {
-			if (physics->velocity.y < 0) {
-				physics->velocity.y -= physics->velocity.y;
-			}
-			space_released_after_jump = 1;
-		}
 
 		if (physics->y + physics->h > GROUND_LEVEL) {
-			playerState = IDLE;
 			physics->y = GROUND_LEVEL - physics->h;
 			physics->accel.y = 0;
 			physics->velocity.y = 0;
+			if (input->rightKeyDown || input->leftKeyDown) {
+				playerState = WALKING;
+			}
+			else {
+				playerState = IDLE;
+			}
 		}
+		updateHeroPos(physics);
 		break;
 	default:
 		break;
 	}
 
-	if (physics->x > prev_x_position) {
+
+	if (physics->velocity.x > 0) {
 		is_looking_right = 1;
 	}
-	else if (physics->x < prev_x_position) {
+	else if (physics->velocity.x < 0) {
 		is_looking_right = 0;
 	}
 
@@ -120,11 +134,9 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 		physics->x = 0;
 		is_looking_right = 1;
 	}
+
 	prev_x_position = physics->x;
 
-	physics->y += physics->velocity.y * MS_PER_UPDATE +
-		0.5 * physics->accel.y * MS_PER_UPDATE * MS_PER_UPDATE;
-	physics->y += physics->accel.y * MS_PER_UPDATE;
 
 }
 
@@ -202,5 +214,31 @@ void PlayerGameObject::handleEnemyCollision(GameObject *enemyObject) {
 		physics->velocity.y = -0.2;
 
 	}
+}
+
+void PlayerLogicComponent::updateHeroPos(PhysicsComponent *physics) {
+
+	physics->y += physics->velocity.y * MS_PER_UPDATE +
+		0.5 * physics->accel.y * MS_PER_UPDATE * MS_PER_UPDATE;
+	physics->velocity.y += physics->accel.y * MS_PER_UPDATE;
+
+	physics->velocity.x += physics->accel.x * MS_PER_UPDATE;
+
+	if (physics->velocity.x > max_walking_speed) {
+		physics->velocity.x = max_walking_speed;
+	}
+	if (physics->velocity.x < -max_walking_speed) {
+		physics->velocity.x = -max_walking_speed;
+	}
+	if (physics->velocity.y > max_jumping_speed) {
+		physics->velocity.y = max_jumping_speed;
+	}
+	if (physics->velocity.y < -max_jumping_speed) {
+		physics->velocity.y = -max_jumping_speed;
+	}
+
+	physics->x += physics->velocity.x * MS_PER_UPDATE +
+		0.5 * physics->accel.x * MS_PER_UPDATE * MS_PER_UPDATE;
+
 }
 

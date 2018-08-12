@@ -33,11 +33,13 @@ public:
 		accel(accel) {
 	};
 	virtual void update() {
+		/*
 		double del = MS_PER_UPDATE;
 		x = x + velocity.x * del + 0.5 * accel.x * del * del;
 		y = y + velocity.y * del + 0.5 * accel.y * del * del;
 		velocity.x += accel.x * del;
 		velocity.y += accel.y * del;
+		*/
 	};
 	Rect getRect() { return Rect(x, y, w, h); };
 	~PhysicsComponent() {};
