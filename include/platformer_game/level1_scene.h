@@ -4,6 +4,7 @@
 #include "sdl/asset_loader.h"
 #include "platformer_game/player.h"
 #include "platformer_game/enemy.h"
+#include "platformer_game/world_camera.h"
 #include "engine/collision_manager.h"
 
 class Level1 : public Scene {
@@ -16,6 +17,7 @@ class Level1 : public Scene {
 
 	PlayerGameObject *player;
 	EnemyGameObject *enemy;
+	WorldCamera *camera;
 
 	CollisionManager *collisionManager;
 

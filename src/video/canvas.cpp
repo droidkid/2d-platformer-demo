@@ -3,6 +3,7 @@
 
 Canvas::Canvas(SDLSystem * sdl) {
 	this->renderer = sdl->getRenderer();
+	camera = new Camera();
 }
 
 void Canvas::clearScreen() {
@@ -11,6 +12,10 @@ void Canvas::clearScreen() {
 
 void Canvas::renderScreen() {
 	SDL_RenderPresent(renderer);
+}
+
+void Canvas::setCamera(Camera *camera) {
+	this->camera = camera;
 }
 
 void Canvas::drawText(char *text, int x, int y, TTF_Font *font, SDL_Color textColor) {
@@ -29,15 +34,15 @@ void Canvas::drawText(char *text, int x, int y, TTF_Font *font, SDL_Color textCo
 }
 
 void Canvas::drawTexture(SDL_Texture *texture, SDL_Rect *boundingBox) {
-	SDL_RenderCopy(renderer, texture, NULL, boundingBox);
+	SDL_RenderCopy(renderer, texture, NULL, &(camera->transform(boundingBox)));
 }
 
 void Canvas::drawTextureHFlip(SDL_Texture *texture, SDL_Rect *boundingBox) {
-	SDL_RenderCopyEx(renderer, texture, NULL, boundingBox, 0, NULL, SDL_FLIP_HORIZONTAL);
+	SDL_RenderCopyEx(renderer, texture, NULL, &(camera->transform(boundingBox)), 0, NULL, SDL_FLIP_HORIZONTAL);
 }
 
 void Canvas::drawTextureVFlip(SDL_Texture *texture, SDL_Rect *boundingBox) {
-	SDL_RenderCopyEx(renderer, texture, NULL, boundingBox, 0, NULL, SDL_FLIP_VERTICAL);
+	SDL_RenderCopyEx(renderer, texture, NULL, &(camera->transform(boundingBox)), 0, NULL, SDL_FLIP_VERTICAL);
 }
 
 void Canvas::drawTexture(SDL_Texture *texture, SDL_Rect boundingBox) {

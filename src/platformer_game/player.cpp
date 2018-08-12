@@ -127,12 +127,10 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 	}
 
 	if (physics->x < 0) {
-		physics->x = SCREEN_WIDTH - physics->w;
-		is_looking_right = 0;
-	}
-	if (physics->x > SCREEN_WIDTH) {
 		physics->x = 0;
-		is_looking_right = 1;
+	}
+	if (physics->x + physics->w > WORLD_WIDTH) {
+		physics->x = WORLD_WIDTH - physics->w;
 	}
 
 	prev_x_position = physics->x;

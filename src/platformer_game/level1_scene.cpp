@@ -1,6 +1,9 @@
 #include "platformer_game/level1_scene.h"
 #include "engine/game_engine_constants.h"
 
+#include <algorithm>
+using namespace std;
+
 using namespace GameEngineConstants;
 
 void Level1::init() {
@@ -13,6 +16,7 @@ void Level1::init() {
 
 	player = new PlayerGameObject(assetLoader);
 	enemy = new EnemyGameObject(assetLoader);
+	camera = new WorldCamera();
 
 	collisionManager->addGameObject(player);
 	collisionManager->addGameObject(enemy);
@@ -20,19 +24,28 @@ void Level1::init() {
 
 void Level1::draw(Canvas *canvas) {
 	
+	camera->setXY(max(0.0, player->getPhysics()->x - 150), 0);
+
 	canvas->clearScreen();
+	canvas->setCamera(camera);
 
 	canvas->drawTexture(background1, { 0, 0, 600, 480 });
 	canvas->drawTexture(background2, { 0, 0, 600, 480 });
 	canvas->drawTexture(background3, { 0, 0, 600, 480 });
+	canvas->drawTexture(background1, { 600, 0, 600, 480 });
+	canvas->drawTexture(background2, { 600, 0, 600, 480 });
+	canvas->drawTexture(background3, { 600, 0, 600, 480 });
+	canvas->drawTexture(background1, { 1200, 0, 600, 480 });
+	canvas->drawTexture(background2, { 1200, 0, 600, 480 });
+	canvas->drawTexture(background3, { 1200, 0, 600, 480 });
 
-	for (int i = 0; i < 600; i = i + 64) {
+	for (int i = 0; i < 2400; i = i + 64) {
 		canvas->drawTexture(block, {i, 310, 64, 64});
 	}
-	for (int i = 0; i < 600; i = i + 64) {
+	for (int i = 0; i < 2400; i = i + 64) {
 		canvas->drawTexture(block, {i, 310 + 64, 64, 64});
 	}
-	for (int i = 0; i < 600; i = i + 64) {
+	for (int i = 0; i < 2400; i = i + 64) {
 		canvas->drawTexture(block, {i, 310 + 128, 64, 64});
 	}
 
