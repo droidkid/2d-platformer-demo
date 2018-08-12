@@ -39,9 +39,14 @@ void Level1::draw(Canvas *canvas) {
 	canvas->drawTexture(background2, { 1200, 0, 600, 480 });
 	canvas->drawTexture(background3, { 1200, 0, 600, 480 });
 
-	for (int i = 0; i < 2400; i = i + 64) {
+	for (int i = 0; i < 600; i = i + 64) {
 		canvas->drawTexture(block, {i, 310, 64, 64});
 	}
+
+	for (int i = 900; i < 2400; i = i + 64) {
+		canvas->drawTexture(block, {i, 310, 64, 64});
+	}
+
 	for (int i = 0; i < 2400; i = i + 64) {
 		canvas->drawTexture(block, {i, 310 + 64, 64, 64});
 	}

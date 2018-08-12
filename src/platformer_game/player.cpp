@@ -15,9 +15,6 @@ PlayerLogicComponent::PlayerLogicComponent() {
 void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 	PlayerState oldPlayerState = playerState;
 
-	if (!input->spacePressed && !space_released_after_jump) {
-		space_released_after_jump = 1;
-	}
 
 	if (input->leftKeyDown && input->rightKeyDown) {
 		input->leftKeyDown = 0;
@@ -39,6 +36,10 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 
 		physics->velocity.x = 0;
 		physics->accel.x = 0;
+
+		if (!input->spacePressed && !space_released_after_jump) {
+			space_released_after_jump = 1;
+		}
 
 		if (input->spacePressed && space_released_after_jump) {
 			playerState = JUMPING;
@@ -68,6 +69,10 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 			physics->accel.x = -WALKING_ACCEL;
 		}
 
+		if (!input->spacePressed && !space_released_after_jump) {
+			space_released_after_jump = 1;
+		}
+
 		if (input->spacePressed && space_released_after_jump) {
 			playerState = JUMPING;
 			space_released_after_jump = 0;
@@ -94,7 +99,8 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 			physics->accel.x = 0;
 		}
 
-		if (space_released_after_jump) {
+		if (!input->spacePressed && !space_released_after_jump) {
+			space_released_after_jump = 1;
 			physics->accel.y = 0.0035;
 		}
 
@@ -207,9 +213,10 @@ void PlayerGameObject::handleEnemyCollision(GameObject *enemyObject) {
 	EnemyGameObject *enemy = (EnemyGameObject *)enemyObject;
 
 	if (physics->velocity.y > 0 &&
-		enemy->enemyLogicComponent->enemyState == WALKING) {
+		enemy->enemyLogicComponent->enemyState == ENEMY_WALKING) {
 
-		physics->velocity.y = -0.2;
+		physics->velocity.y = JUMP_VEL;
+		physics->accel.y = JUMP_ACCEL;
 
 	}
 }
