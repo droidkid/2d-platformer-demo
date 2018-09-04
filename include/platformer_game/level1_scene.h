@@ -18,7 +18,8 @@ class Level1 : public Scene {
 
 	PlayerGameObject *player;
 	EnemyGameObject *enemy;
-	BlockGameObject *block;
+	BlockGameObject *block1;
+	BlockGameObject *block2;
 	WorldCamera *camera;
 
 	CollisionManager *collisionManager;

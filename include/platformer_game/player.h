@@ -83,14 +83,15 @@ public:
 
 class PlayerGameObject : public GameObject {
 public:
+	PlayerLogicComponent *playerLogic;
 	PlayerGameObject(AssetLoader *assetLoader) {
 		PlayerPhysicsComponent *physics = new PlayerPhysicsComponent();
-		PlayerLogicComponent *logic = new PlayerLogicComponent();
-		PlayerGraphicsComponent *graphics = new PlayerGraphicsComponent(logic, physics, assetLoader);
+		playerLogic = new PlayerLogicComponent();
+		PlayerGraphicsComponent *graphics = new PlayerGraphicsComponent(playerLogic, physics, assetLoader);
 
 		this->physics = physics;
 		this->graphics = graphics;
-		this->logic = logic;
+		this->logic = playerLogic;
 		this->objectType = PLAYER_OBJECT_TYPE;
 	};
 
@@ -99,11 +100,14 @@ public:
 		case ENEMY_OBJECT_TYPE:
 			handleEnemyCollision(otherGameObject);
 			break;
+		case BLOCK_OBJECT_TYPE:
+			handleBlockCollision(otherGameObject);
 		default:
 			break;
 		}
 	}
 private:
 	void handleEnemyCollision(GameObject *enemyObject);
+	void handleBlockCollision(GameObject *gameObject);
 };
 

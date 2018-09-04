@@ -8,17 +8,16 @@
 #include "game_constants.h"
 #include "sdl/asset_loader.h"
 
-const int BLOCK_WIDTH = 30;
 const int BLOCK_HEIGHT = 30;
 
 
 class BlockPhysicsComponent : public PhysicsComponent {
 public:
 	BlockPhysicsComponent() {};
-	BlockPhysicsComponent(int x, int y) {
+	BlockPhysicsComponent(int x, int y, int w) {
 		this->x = x;
 		this->y = y;
-		this->w = BLOCK_WIDTH;
+		this->w = w;
 		this->h = BLOCK_HEIGHT;
 	}
 };
@@ -40,10 +39,10 @@ public:
 	}
 	void draw(Canvas *canvas) {
 		SDL_Rect boundingBox = {
-			physics->x ,
+			physics->x,
 			physics->y,
 			physics->w,
-			physics->h
+			physics->h,
 		};
 		canvas->drawTexture(boxTexture , boundingBox);
 	}
@@ -51,10 +50,11 @@ public:
 
 class BlockGameObject : public GameObject {
 public:
-	BlockGameObject(AssetLoader *assetLoader, int x, int y) {
-		this->physics = new BlockPhysicsComponent(x, y);
+	BlockGameObject(AssetLoader *assetLoader, int x, int y, int w) {
+		this->physics = new BlockPhysicsComponent(x, y, w);
 		this->graphics = new BlockGraphicsComponent(physics, assetLoader);
 		this->logic = new BlockLogicComponent();
+		this->objectType = BLOCK_OBJECT_TYPE;
 	}
 };
 

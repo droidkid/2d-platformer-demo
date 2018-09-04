@@ -36,6 +36,7 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 
 		physics->velocity.x = 0;
 		physics->accel.x = 0;
+		physics->accel.y = 0.0035;
 
 		if (!input->spacePressed && !space_released_after_jump) {
 			space_released_after_jump = 1;
@@ -47,6 +48,7 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 			physics->velocity.y = JUMP_VEL;
 			physics->accel.y = JUMP_ACCEL;
 		}
+		updateHeroPos(physics);
 		break;
 	case WALKING:
 
@@ -72,6 +74,7 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 		if (!input->spacePressed && !space_released_after_jump) {
 			space_released_after_jump = 1;
 		}
+		physics->accel.y = 0.0035;
 
 		if (input->spacePressed && space_released_after_jump) {
 			playerState = JUMPING;
@@ -107,17 +110,6 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 		// If Player releases space early, makes the player make a
 		// smaller jump.
 
-		if (physics->y + physics->h > GROUND_LEVEL) {
-			physics->y = GROUND_LEVEL - physics->h;
-			physics->accel.y = 0;
-			physics->velocity.y = 0;
-			if (input->rightKeyDown || input->leftKeyDown) {
-				playerState = WALKING;
-			}
-			else {
-				playerState = IDLE;
-			}
-		}
 		updateHeroPos(physics);
 		break;
 	default:
@@ -141,6 +133,18 @@ void PlayerLogicComponent::update(PhysicsComponent *physics, Input *input) {
 
 	prev_x_position = physics->x;
 
+	if (physics->y + physics->h > GROUND_LEVEL) {
+		physics->y = GROUND_LEVEL - physics->h;
+		physics->accel.y = 0;
+		physics->velocity.y = 0;
+		if (input->rightKeyDown || input->leftKeyDown) {
+			playerState = WALKING;
+		}
+		else {
+			playerState = IDLE;
+		}
+	}
+
 
 }
 
@@ -154,6 +158,7 @@ void PlayerGraphicsComponent::draw(Canvas *canvas) {
 	};
 
 	SDL_Texture **walkTexture = &walkTexture1;
+	canvas->drawTextureDebug(*walkTexture, &boundingBox);
 
 	switch (logic->playerState) {
 	case WALKING:
@@ -217,8 +222,43 @@ void PlayerGameObject::handleEnemyCollision(GameObject *enemyObject) {
 
 		physics->velocity.y = JUMP_VEL;
 		physics->accel.y = JUMP_ACCEL;
-
 	}
+}
+
+void PlayerGameObject::handleBlockCollision(GameObject *block) {
+	if (physics->x + physics->w >= block->getPhysics()->x 
+		&& physics->x + physics->w < block->getPhysics()->x + 3) {
+		cout << "HERE1" << endl;
+		physics->x = block->getPhysics()->x - physics->w;
+		return;
+	}
+	else if (physics->x <= block->getPhysics()->x + block->getPhysics()->w
+		&& physics->x > block->getPhysics()->x + block->getPhysics()->w - 3) {
+
+		cout << "HERE2" << endl;
+		physics->x = block->getPhysics()->x + block->getPhysics()->w;
+		return;
+	}
+
+	if (physics->velocity.y > 0 && physics->y < block->getPhysics()->y ) {
+		physics->y = block->getPhysics()->y - physics->h;
+		if (playerLogic->playerState == JUMPING) {
+			playerLogic->playerState = IDLE;
+			if (physics->accel.x != 0) {
+				playerLogic->playerState = WALKING;
+			}
+			physics->accel.y = 0;
+			physics->velocity.y = 0;
+		}
+		cout << "HERE3" << endl;
+	}
+
+	else if (physics->velocity.y < 0.1 && physics->y > block->getPhysics()->y ) {
+		physics->y = block->getPhysics()->y + block->getPhysics()->h;
+			physics->accel.y = 0.001;
+		cout << "HERE4" << endl;
+	}
+
 }
 
 void PlayerLogicComponent::updateHeroPos(PhysicsComponent *physics) {

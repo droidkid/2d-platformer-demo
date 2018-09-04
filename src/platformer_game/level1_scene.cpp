@@ -16,11 +16,14 @@ void Level1::init() {
 
 	player = new PlayerGameObject(assetLoader);
 	enemy = new EnemyGameObject(assetLoader);
-	block = new BlockGameObject(assetLoader, 240, 240);
+	block2 = new BlockGameObject(assetLoader, 240, 180, 80);
+	block1 = new BlockGameObject(assetLoader, 240-80, 210, 80);
 	camera = new WorldCamera();
 
 	collisionManager->addGameObject(player);
 	collisionManager->addGameObject(enemy);
+	collisionManager->addGameObject(block2);
+	collisionManager->addGameObject(block1);
 }
 
 void Level1::draw(Canvas *canvas) {
@@ -57,7 +60,8 @@ void Level1::draw(Canvas *canvas) {
 
 	player->draw(canvas);
 	enemy->draw(canvas);
-	block->draw(canvas);
+	block1->draw(canvas);
+	block2->draw(canvas);
 
 	canvas->renderScreen();
 }

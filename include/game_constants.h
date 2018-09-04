@@ -10,4 +10,5 @@ namespace GameConstants {
 
 	const int PLAYER_OBJECT_TYPE = 1;
 	const int ENEMY_OBJECT_TYPE = 2;
+	const int BLOCK_OBJECT_TYPE = 3;
 }

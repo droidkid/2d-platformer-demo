@@ -37,6 +37,11 @@ void Canvas::drawTexture(SDL_Texture *texture, SDL_Rect *boundingBox) {
 	SDL_RenderCopy(renderer, texture, NULL, &(camera->transform(boundingBox)));
 }
 
+void Canvas::drawTextureDebug(SDL_Texture *texture, SDL_Rect *boundingBox) {
+	//SDL_RenderCopy(renderer, texture, NULL, &(camera->transform(boundingBox)));
+	SDL_RenderFillRect(renderer, &(camera->transform(boundingBox)));
+}
+
 void Canvas::drawTextureHFlip(SDL_Texture *texture, SDL_Rect *boundingBox) {
 	SDL_RenderCopyEx(renderer, texture, NULL, &(camera->transform(boundingBox)), 0, NULL, SDL_FLIP_HORIZONTAL);
 }
