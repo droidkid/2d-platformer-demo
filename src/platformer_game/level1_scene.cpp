@@ -12,10 +12,11 @@ void Level1::init() {
 	assetLoader->loadPNGintoTexture("assets/PNG/Backgrounds/set1_tiles.png", &background2);
 	assetLoader->loadPNGintoTexture("assets/PNG/Backgrounds/set1_hills.png", &background3);
 
-	assetLoader->loadPNGintoTexture("assets/PNG/Other/fluidGreen.png", &block);
+	assetLoader->loadPNGintoTexture("assets/PNG/Other/fluidGreen.png", &ground);
 
 	player = new PlayerGameObject(assetLoader);
 	enemy = new EnemyGameObject(assetLoader);
+	block = new BlockGameObject(assetLoader, 240, 240);
 	camera = new WorldCamera();
 
 	collisionManager->addGameObject(player);
@@ -40,22 +41,23 @@ void Level1::draw(Canvas *canvas) {
 	canvas->drawTexture(background3, { 1200, 0, 600, 480 });
 
 	for (int i = 0; i < 600; i = i + 64) {
-		canvas->drawTexture(block, {i, 310, 64, 64});
+		canvas->drawTexture(ground, {i, 310, 64, 64});
 	}
 
 	for (int i = 900; i < 2400; i = i + 64) {
-		canvas->drawTexture(block, {i, 310, 64, 64});
+		canvas->drawTexture(ground, {i, 310, 64, 64});
 	}
 
 	for (int i = 0; i < 2400; i = i + 64) {
-		canvas->drawTexture(block, {i, 310 + 64, 64, 64});
+		canvas->drawTexture(ground, {i, 310 + 64, 64, 64});
 	}
 	for (int i = 0; i < 2400; i = i + 64) {
-		canvas->drawTexture(block, {i, 310 + 128, 64, 64});
+		canvas->drawTexture(ground, {i, 310 + 128, 64, 64});
 	}
 
 	player->draw(canvas);
 	enemy->draw(canvas);
+	block->draw(canvas);
 
 	canvas->renderScreen();
 }
