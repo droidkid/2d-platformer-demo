@@ -1,5 +1,8 @@
-# simple-game-engine
-Simple Game Engine using SDL2. The Jump game in this repo has been published at https://chesetti.itch.io/jump-game.
+# Platformer Game
+
+Extension of the simple game engine.
+
+Simple sidescroller. Plan is to make it an infinite runner.
 
 ## Build instructions for Linux.
 
@@ -12,10 +15,3 @@ $ cmake ..
 $ make
 $ ./game
 ```
-
-## Build instructions for Windows.
-
-Download [dependencies](https://drive.google.com/open?id=1SWtxt1CuLF3d8bRoZ09E5R6730bMoTJG), unzip and place it under the top directory.
-
-Then run cmake, generate the project using Visual Studio 15. Use Visual Studio to build the generated sln.
-
